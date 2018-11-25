@@ -5,7 +5,7 @@
     Author:         Arne Tiedemann
     Date:           2018-11-25
 #>
-$OU = 'OU=User,OU=Company,dc=domain,dc=com'
+$OU = "OU=User,OU=Company,dc=domain,dc=com"
 $Users = Import-Csv -Path "Path2Csv\Namelist.csv" -Encoding UTF8
 $UPNDomain = 'Domain.tld'
 $Country = 'DE'
