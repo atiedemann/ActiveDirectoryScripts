@@ -13,5 +13,6 @@ $OU = 'OU=User,OU=Company,dc=domain,dc=com'
 $Users = Import-Csv -Path "<Path2File>\Namelist.csv" -Encoding UTF8
 $UPNDomain = 'domain.tld'
 $Country = '<CountryCode>' # ISO Country code #2 Letters
+
   
 
