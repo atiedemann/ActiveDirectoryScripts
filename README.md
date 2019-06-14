@@ -10,6 +10,8 @@ LAPS does not save password history to active directory. My script will do this 
 
 These script will get all computer objects from local domain that have an active directory attribute 'ms-Mcs-AdmPwd' set and export the objects, only name, password and date to an csv file. If a computer password was changed, the script will add an new row for this computer.
 
+### Get-NoClientSiteNetworks.ps1
+These file will collect from any Domain Controller the netlogon.log file and search for NO_CLIENT_SITE Clients and collect every IP from that. After collecting every data I remove the last octet from IP address and group the output ordered by count. As result, you will see a list of ip subnets that's are missing in Active Directory Sites and Services.
 
 ## Tier 1
 This scripts can be executed on tier 1 systems
