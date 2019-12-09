@@ -40,7 +40,7 @@ Diese vordefinierten Einstellungen werden in der Richtlinie konfiguriert.<br />
 ![Firewall Einstellungen](../img/FWitems1.png "Firewall Einstellungen")
 
 Einstellungen der Gruppenrichtlinie effektiv.<br />
-![Firewall Einstellungen](../img/FWitems2.png "Firewall Einstellungen")
+![Firewall Einstellungen effektiv](../img/FWitems2.png "Firewall Einstellungen effektiv")
 
 
 ### Einrichtung Gruppenrichtlinie
