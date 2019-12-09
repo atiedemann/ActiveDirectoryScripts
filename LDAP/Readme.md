@@ -37,7 +37,7 @@ Die Gruppenrichtline konfiguriert folgende Bereiche:
 - WinRM Client und Service
 
 Diese vordefinierten Einstellungen werden in der Richtlinie konfiguriert.<br />
-![Firewall Einstellungen](../img/FWItems1.png "Firewall Einstellungen")
+![Firewall Einstellungen](../img/FWitems1.png "Firewall Einstellungen")
 
 Einstellungen der Gruppenrichtlinie effektiv.<br />
 ![Firewall Einstellungen effektiv](../img/FWItems2.png "Firewall Einstellungen effektiv")
