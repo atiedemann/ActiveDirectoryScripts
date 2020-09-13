@@ -1,6 +1,25 @@
 # ActiveDirectoryScripts
 This repository will host some usefull scripts for Active Directory and Domain Controller tasks
 
+## Computer
+### Get-NetFirewallLogs
+This script try to connect to a Windows Client or Server to receive pFirewall.log and display the content as Grid-View table as searchable and sortable table.
+Requirements:
+- Admin on target computer
+- Drop Logs are enabled for Windows Filrewall
+
+## DHCP
+I add a PowerShell script file with three functions for Microsoft DHCP Servers
+
+### Add-DHCPv4Reservation
+This function add a DHCP reservation to one or more DHCP-Servers and check if the reservation is present or not.
+
+### Remove-DHCPv4Reservation
+This function removes DHCP reservation from one or mor DHCP-Servers
+
+### Get-DhcpLog
+The function gets the DHCP-Server logs from one or more DHCP-Servers and display the results as Grid-View table.
+
 ## Tier 0
 This scripts should only be used in tier 0 environment.
 Tier0 => only Domain Admins have access to this files
