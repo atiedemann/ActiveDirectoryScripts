@@ -54,6 +54,8 @@ $Users = Import-Csv -Path "<Path2File>\Namelist.csv" -Encoding UTF8
 $UPNDomain = 'domain.tld'
 $Country = '<CountryCode>' # ISO Country code #2 Letters
 
+## GetGmsaKDSRootKey.ps1
+This script display association between a group managed service account and KDS Root Key
 
 # LDAP Scripts (German)
 Read the article here: [LDAP](/LDAP/Readme.md "LDAP")
