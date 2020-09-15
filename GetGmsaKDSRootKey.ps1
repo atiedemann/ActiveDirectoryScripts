@@ -26,7 +26,7 @@ Get-ADServiceAccount -Filter * -Properties $Property | ForEach-Object {
     $HexString[27],$HexString[26],$HexString[25],$HexString[24], `
     $HexString[29],$HexString[28], `
     $HexString[31],$HexString[30], `
-    $HexString[33],$HexString[32], `
+    $HexString[32],$HexString[33], `
     $HexString[34],$HexString[35],$HexString[36],$HexString[37],$HexString[38],$HexString[39])
 
 
