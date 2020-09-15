@@ -32,7 +32,7 @@ Get-ADServiceAccount -Filter * -Properties $Property | ForEach-Object {
 
     $GroupManageServiceAccount += [PSCustomObject]@{
         Name = $_.sAMAccountName
-        gMSAId = $gMSAId
+        GmsaId = $gMSAId
     }
 }
 
@@ -41,7 +41,7 @@ Get-ADServiceAccount -Filter * -Properties $Property | ForEach-Object {
 ###########################################################################
 # Cleaning Up the workspace
 
-$GroupManageServiceAccount
+$GroupManageServiceAccount | Sort-Object -Property GmsaId
 
 ###########################################################################
 # End
