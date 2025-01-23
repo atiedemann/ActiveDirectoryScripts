@@ -235,7 +235,7 @@ if ($reloadObject -eq $true) {
 
 # Only show an object list with group by owners
 if ($ShowOwners -eq $true) {
-    $ADObjects | Group-Object -Property Owner | Out-GridView
+    $ADObjects | Group-Object -Property Owner
 }
 
 # if change owners is active, do it
