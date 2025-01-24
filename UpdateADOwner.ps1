@@ -340,7 +340,7 @@ if ($ChangeOwner -eq $true -and $ADObjects.Count -gt 0) {
             Set-Logging -Message ('{0} object(s) updated successfully.' -f $processedObjects.Count)
             Set-Logging -Message '##########################################################'
 
-            $processedObjects | ft -AutoSize
+            $processedObjects | Out-GridView
         }
     } else {
         Set-Logging -Message 'We do not find the new owner in Active Directory!' -Severity 'Warning'
