@@ -51,7 +51,7 @@ Email: Arne.Tiedemann@Skaylink.com
 https://github.com/atiedemann/ActiveDirectoryScripts
 
 #>
-[CmdletBinding(DefaultParametersetName = 'None')]
+[CmdletBinding(DefaultParametersetName = 'ShowOwners')]
 Param(
     [ValidateSet('User', 'Group', 'Computer', 'OrganizationalUnit')]
     [Parameter(ParameterSetName = 'ChangeOwner')]
@@ -73,17 +73,27 @@ Param(
     [Parameter(Mandatory = $true, ParameterSetName = 'ChangeOwner')]
     [STRING]$NewOwner,
 
-    [Parameter(Mandatory = $true, ParameterSetName = 'ShowOwners')]
-    [switch]$ShowOwners
+    [Parameter(ParameterSetName = 'ShowOwners')]
+    [bool]$ShowOwners = $true,
+
+    [ValidateSet('User', 'Group', 'Computer', 'OrganizationalUnit')]
+    [Parameter(ParameterSetName = 'ChangeOwner')]
+    [Parameter(ParameterSetName = 'ShowOwners')]
+    [bool]$LogConsole = $false,
+
+    [ValidateSet('User', 'Group', 'Computer', 'OrganizationalUnit')]
+    [Parameter(ParameterSetName = 'ChangeOwner')]
+    [Parameter(ParameterSetName = 'ShowOwners')]
+    [bool]$LogFile = $true
 )
 ###########################################################################
 # Variables
 ###########################################################################
 $PathLogfile = ('{0}\UpdateADOwner.log' -f $PSScriptRoot)
 $ownerLogPath = ('{0}\{1}_UpdateADOwner_Owners_{2}.log' -f $PSScriptRoot, (Get-Date -Format 'yyyy-MM-dd_HHmmss'), $ObjectType)
-# Write to plain text logfile (TRUE|FALSE)
-$LogFileOutput = $true
-$LogToConsole = $true
+
+$LogToConsole = $LogConsole
+$LogFileOutput = $LogFile
 
 if ($ReloadData -eq $true -or $ADObjects.Count -eq 0 -or $ObjectType -ne $ADObjects[0].objectClass) {
     $ADObjects = [System.Collections.Generic.List[PSObject]]::New()
@@ -183,6 +193,18 @@ function Write-Message {
 ###########################################################################
 # Script
 ###########################################################################
+if ($LogToConsole -eq $false){
+    # for logging we need logtoconsole
+    $LogToConsole = $true
+
+    Set-Logging -Message 'Information about log to console' -Severity 'Warning'
+    Set-Logging -Message 'You will get no logging output to console!'
+    Set-Logging -Message 'If you want output to console, use parameter -LogToConsole:$true'
+
+    # But the user dont want to log to console
+    $LogToConsole = $false
+}
+
 Set-Logging -Message 'Start identifying active directory objects'
 if ($LogFileOutput -eq $true) {
     Set-Logging -Message ('All logging information will be saved to this file: {0}' -f $PathLogfile)
@@ -234,7 +256,7 @@ if ($reloadObject -eq $true) {
 }
 
 # Only show an object list with group by owners
-if ($ShowOwners -eq $true) {
+if ($ShowOwners -eq $true -and $ChangeOwner -eq $false) {
     $ADObjects | Group-Object -Property Owner
 }
 
@@ -304,9 +326,16 @@ if ($ChangeOwner -eq $true -and $ADObjects.Count -gt 0) {
         # Log the found Objects
         $processedObjects | Export-Csv -Path $ownerLogPath -NoTypeInformation -Force
 
+        $LogToConsole = $true
         # check if objects found
-        if ($objCount -eq 0){
+        if ($processedObjects -eq 0){
             Set-Logging -Message 'No object where found to update.' -Severity 'Warning'
+        } else {
+            Set-Logging -Message '################### Update Information ###################'
+            Set-Logging -Message ('{0} object(s) updated successfully.' -f $processedObjects.Count)
+            Set-Logging -Message '##########################################################'
+
+            $processedObjects | ft -AutoSize
         }
     } else {
         Set-Logging -Message 'We do not find the new owner in Active Directory!' -Severity 'Warning'
