@@ -84,7 +84,7 @@ Param(
     [ValidateSet('User', 'Group', 'Computer', 'OrganizationalUnit')]
     [Parameter(ParameterSetName = 'ChangeOwner')]
     [Parameter(ParameterSetName = 'ShowOwners')]
-    [bool]$LogFile = $true
+    [bool]$LogFile = $false
 )
 ###########################################################################
 # Variables
