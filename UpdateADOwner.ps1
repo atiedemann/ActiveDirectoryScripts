@@ -239,7 +239,7 @@ if ($reloadObject -eq $true) {
         # Get the acl from AD Object
         $Acl = $null
         try {
-            $Acl = Get-Acl -Path AD:$($Obj.DistinguishedName) -ErrorAction Stop
+            $Acl = Get-Acl -Path ('Microsoft.ActiveDirectory.Management.dll\ActiveDirectory:://RootDSE/{0}' -f $Obj.DistinguishedName) -ErrorAction Stop
         } catch {
             Set-Logging -Message $_.Exception.Message -Severity 'Error'
             Set-Logging -Message ('Failed object: {0}' -f $Obj.DistinguishedName) -Severity 'Warning'
@@ -257,7 +257,12 @@ if ($reloadObject -eq $true) {
 
 # Only show an object list with group by owners
 if ($ShowOwners -eq $true -and $ChangeOwner -eq $false) {
-    $ADObjects | Group-Object -Property Owner
+    $ADObjectsOutput = $ADObjects | Group-Object -Property Owner | Sort-Object -Property Count | Select-Object Count, Name | Out-GridView -PassThru
+
+    # If select owners for output
+    if ($ADObjectsOutput.Count -gt 0){
+        $ADObjects | Where-Object { $_.Owner -in $ADObjectsOutput.Name } | Sort-Object -Property Name | Export-Csv -NoTypeInformation -Path ('{0}\UpdateADOwners_Export.csv' -f $PSScriptRoot)
+    }
 }
 
 # if change owners is active, do it
@@ -292,7 +297,7 @@ if ($ChangeOwner -eq $true -and $ADObjects.Count -gt 0) {
 
             try {
                 $Acl = $null
-                $Acl = Get-Acl -Path AD:$DN -ErrorVariable Stop
+                $Acl = Get-Acl -Path ('"Microsoft.ActiveDirectory.Management.dll\ActiveDirectory:://RootDSE/{0}' -f $DN) -ErrorVariable Stop
                 $Acl.SetOwner($Owner)
 
                 # Set new ACL
