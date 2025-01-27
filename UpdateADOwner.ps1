@@ -199,7 +199,7 @@ if ($LogToConsole -eq $false) {
 
     Set-Logging -Message 'Information about log to console' -Severity 'Warning'
     Set-Logging -Message 'You will get no logging output to console!'
-    Set-Logging -Message 'If you want output to console, use parameter -LogToConsole:$true'
+    Set-Logging -Message 'If you want output to console, use parameter -LogConsole:$true'
 
     # But the user dont want to log to console
     $LogToConsole = $false
