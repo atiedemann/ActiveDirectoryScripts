@@ -98,7 +98,9 @@ if ($ReloadData -eq $true -or $ADObjects.Count -eq 0 -or $ObjectType -ne $ADObje
 
     # Reload object
     $reloadObject = $true
-} else { $reloadObject = $false }
+} else {
+    $reloadObject = $false
+}
 ###########################################################################
 # Functions
 ###########################################################################
@@ -191,7 +193,7 @@ function Write-Message {
 ###########################################################################
 # Script
 ###########################################################################
-if ($LogToConsole -eq $false){
+if ($LogToConsole -eq $false) {
     # for logging we need logtoconsole
     $LogToConsole = $true
 
@@ -239,8 +241,12 @@ if ($reloadObject -eq $true) {
         try {
             $Acl = Get-Acl -Path ('Microsoft.ActiveDirectory.Management\ActiveDirectory:://RootDSE/{0}' -f $Obj.DistinguishedName) -ErrorAction Stop
         } catch {
-            Set-Logging -Message $_.Exception.Message -Severity 'Error'
-            Set-Logging -Message ('Failed object: {0}' -f $Obj.DistinguishedName) -Severity 'Warning'
+            try {
+                $Acl = Get-Acl -Path ('Microsoft.ActiveDirectory.Management.dll\ActiveDirectory:://RootDSE/{0}' -f $Obj.DistinguishedName) -ErrorAction Stop
+            } catch {
+                Set-Logging -Message $_.Exception.Message -Severity 'Error'
+                Set-Logging -Message ('Failed object: {0}' -f $Obj.DistinguishedName) -Severity 'Warning'
+            }
         }
 
         # Add object to arraylist
@@ -258,7 +264,7 @@ if ($ShowOwners -eq $true -and $ChangeOwner -eq $false) {
     $ADObjectsOutput = $ADObjects | Group-Object -Property Owner | Sort-Object -Property Count | Select-Object Count, Name | Out-GridView -PassThru
 
     # If select owners for output
-    if ($ADObjectsOutput.Count -gt 0){
+    if ($ADObjectsOutput.Count -gt 0) {
         $ADObjects | Where-Object { $_.Owner -in $ADObjectsOutput.Name } | Sort-Object -Property Name | Export-Csv -NoTypeInformation -Path ('{0}\UpdateADOwners_Export.csv' -f $PSScriptRoot)
     }
 }
@@ -295,20 +301,30 @@ if ($ChangeOwner -eq $true -and $ADObjects.Count -gt 0) {
 
             try {
                 $Acl = $null
-                $Acl = Get-Acl -Path ('"Microsoft.ActiveDirectory.Management\ActiveDirectory:://RootDSE/{0}' -f $DN) -ErrorVariable Stop
+                try {
+                    $Acl = Get-Acl -Path ('Microsoft.ActiveDirectory.Management\ActiveDirectory:://RootDSE/{0}' -f $DN) -ErrorAction Stop
+                } catch {
+                    try {
+                        $Acl = Get-Acl -Path ('Microsoft.ActiveDirectory.Management.dll\ActiveDirectory:://RootDSE/{0}' -f $DN) -ErrorAction Stop
+                    } catch {
+                        Set-Logging -Message $_.Exception.Message -Severity 'Error'
+                        Set-Logging -Message ('Failed to object: {0}' -f $DN) -Severity 'Warning'
+                    }
+                }
+
                 $Acl.SetOwner($Owner)
 
                 # Set new ACL
                 $null = Set-Acl -Path AD:$DN -AclObject $Acl -ErrorVariable Stop
 
                 $processedObjects.Add([PSCustomObject]@{
-                    Name = $item.Name
-                    DistinguishedName = $item.DistinguishedName
-                    ObjectClass = $item.ObjectClass
-                    OldOwner = $item.Owner
-                    NewOwner = $NewOwner
-                    Successful = $true
-                })
+                        Name              = $item.Name
+                        DistinguishedName = $item.DistinguishedName
+                        ObjectClass       = $item.ObjectClass
+                        OldOwner          = $item.Owner
+                        NewOwner          = $NewOwner
+                        Successful        = $true
+                    })
 
                 Set-Logging -Message ('Update ACL for object {0}' -f $item.DistinguishedName)
             } catch {
@@ -316,13 +332,13 @@ if ($ChangeOwner -eq $true -and $ADObjects.Count -gt 0) {
                 Set-Logging -Message $_.Exception.Message -Severity 'Error'
 
                 $processedObjects.Add([PSCustomObject]@{
-                    Name = $item.Name
-                    DistinguishedName = $item.DistinguishedName
-                    ObjectClass = $item.ObjectClass
-                    OldOwner = $item.Owner
-                    NewOwner = $NewOwner
-                    Successful = $false
-                })
+                        Name              = $item.Name
+                        DistinguishedName = $item.DistinguishedName
+                        ObjectClass       = $item.ObjectClass
+                        OldOwner          = $item.Owner
+                        NewOwner          = $NewOwner
+                        Successful        = $false
+                    })
             }
         }
 
@@ -331,7 +347,7 @@ if ($ChangeOwner -eq $true -and $ADObjects.Count -gt 0) {
 
         $LogToConsole = $true
         # check if objects found
-        if ($processedObjects -eq 0){
+        if ($processedObjects -eq 0) {
             Set-Logging -Message 'No object where found to update.' -Severity 'Warning'
         } else {
             Set-Logging -Message '################### Update Information ###################'
