@@ -76,12 +76,10 @@ Param(
     [Parameter(ParameterSetName = 'ShowOwners')]
     [bool]$ShowOwners = $true,
 
-    [ValidateSet('User', 'Group', 'Computer', 'OrganizationalUnit')]
     [Parameter(ParameterSetName = 'ChangeOwner')]
     [Parameter(ParameterSetName = 'ShowOwners')]
     [bool]$LogConsole = $false,
 
-    [ValidateSet('User', 'Group', 'Computer', 'OrganizationalUnit')]
     [Parameter(ParameterSetName = 'ChangeOwner')]
     [Parameter(ParameterSetName = 'ShowOwners')]
     [bool]$LogFile = $false
@@ -239,7 +237,7 @@ if ($reloadObject -eq $true) {
         # Get the acl from AD Object
         $Acl = $null
         try {
-            $Acl = Get-Acl -Path ('Microsoft.ActiveDirectory.Management.dll\ActiveDirectory:://RootDSE/{0}' -f $Obj.DistinguishedName) -ErrorAction Stop
+            $Acl = Get-Acl -Path ('Microsoft.ActiveDirectory.Management\ActiveDirectory:://RootDSE/{0}' -f $Obj.DistinguishedName) -ErrorAction Stop
         } catch {
             Set-Logging -Message $_.Exception.Message -Severity 'Error'
             Set-Logging -Message ('Failed object: {0}' -f $Obj.DistinguishedName) -Severity 'Warning'
@@ -297,7 +295,7 @@ if ($ChangeOwner -eq $true -and $ADObjects.Count -gt 0) {
 
             try {
                 $Acl = $null
-                $Acl = Get-Acl -Path ('"Microsoft.ActiveDirectory.Management.dll\ActiveDirectory:://RootDSE/{0}' -f $DN) -ErrorVariable Stop
+                $Acl = Get-Acl -Path ('"Microsoft.ActiveDirectory.Management\ActiveDirectory:://RootDSE/{0}' -f $DN) -ErrorVariable Stop
                 $Acl.SetOwner($Owner)
 
                 # Set new ACL
