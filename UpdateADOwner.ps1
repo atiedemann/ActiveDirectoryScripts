@@ -265,7 +265,8 @@ if ($ShowOwners -eq $true -and $ChangeOwner -eq $false) {
 
     # If select owners for output
     if ($ADObjectsOutput.Count -gt 0) {
-        $ADObjects | Where-Object { $_.Owner -in $ADObjectsOutput.Name } | Sort-Object -Property Name | Export-Csv -NoTypeInformation -Path ('{0}\UpdateADOwners_Export.csv' -f $PSScriptRoot)
+        $ADObjects | Group-Object -Property Owner | Sort-Object -Property Count | Select-Object Count,Name | Export-Csv -NoTypeInformation -Path ('{0}\{1}_Export-Summary.csv' -f $PSScriptRoot, (Get-Date -Format 'yyyy-MM-dd_HHmmss'))
+        $ADObjects | Where-Object { $_.Owner -in $ADObjectsOutput.Name } | Sort-Object -Property Name | Export-Csv -NoTypeInformation -Path ('{0}\{1}_{2}_UpdateADOwners_Export.csv' -f $PSScriptRoot, (Get-Date -Format 'yyyy-MM-dd_HHmmss'), $ObjectType)
     }
 }
 
