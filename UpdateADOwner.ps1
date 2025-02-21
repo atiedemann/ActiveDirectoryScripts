@@ -213,7 +213,7 @@ if ($LogFileOutput -eq $true) {
 # Getting Data from Active Directory
 if ($reloadObject -eq $true) {
     Set-Logging -Message '##########################################'
-    Set-Logging -Message 'Getting Active Directory objects...'
+    Set-Logging -Message ('Getting Active Directory objects for type: {0}' -f $ObjectType)
     Set-Logging -Message '##########################################'
     # Get objects by type
     switch ($ObjectType) {
@@ -277,10 +277,10 @@ if ($ChangeOwner -eq $true -and $ADObjects.Count -gt 0) {
     $Domain = (Get-ADDomain).NetBIOSName
 
     # Check if new owner exists
-    $Result = Get-ADObject -Filter { (sAMAccountName -eq $NewOwner -and (ObjectClass -eq 'user' -or ObjectClass -eq 'group')) }
+    $Result = Get-ADObject -Filter { (sAMAccountName -eq $NewOwner -and (ObjectClass -eq 'user' -or ObjectClass -eq 'group')) } -Properties sAMAccountName
 
     # Run only if new owner exists
-    if ($Result.Name -eq $NewOwner) {
+    if ($Result.sAMAccountName -eq $NewOwner) {
         $NewOwner = ('{0}\{1}' -f $Domain, $NewOwner)
         Set-Logging -Message 'Change owner' -Severity 'Warning'
         Set-Logging -Message ('From: {0}' -f $OldOwner) -Severity 'Warning'
@@ -294,7 +294,13 @@ if ($ChangeOwner -eq $true -and $ADObjects.Count -gt 0) {
         $objCount = 0
 
         # Update AD Object to new Owner
-        $ADObjects | Where-Object { $_.Owner -eq ('{0}\{1}' -f $Domain, $OldOwner) } | ForEach-Object {
+        if ($OldOwner -match '^O:S-1-[0-59]-\d{2}-\d{8,10}'){
+            $ADObjects = $ADObjects | Where-Object { $_.Owner -match $OldOwner }
+        } else {
+            $ADObjects = $ADObjects | Where-Object { $_.Owner -eq ('{0}\{1}' -f $Domain, $OldOwner) }
+        }
+
+        $ADObjects | ForEach-Object {
             # Set vars
             $objCount++
             $item = $_
