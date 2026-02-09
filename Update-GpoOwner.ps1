@@ -86,7 +86,7 @@ Write-Host '2: Change to Administrators'
 Write-Host '################################################################'
 
 # Check if predefined selection was made
-if ($NewOwnerSelection -eq $null) {
+if ($NewOwnerSelection -eq $false) {
     $choice = Read-Host 'Enter your choice (0, 1, or 2)'
 } else {
     $choice = $NewOwnerSelection
@@ -199,3 +199,5 @@ if ($choice -eq 0) {
 ###########################################################################
 # End
 ###########################################################################
+
+
