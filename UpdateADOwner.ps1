@@ -322,7 +322,7 @@ if ($ChangeOwner -eq $true -and $ADObjects.Count -gt 0) {
                 $Acl.SetOwner($Owner)
 
                 # Set new ACL
-                $null = Set-Acl -Path AD:$DN -AclObject $Acl -ErrorVariable Stop
+                $null = Set-Acl -Path ('Microsoft.ActiveDirectory.Management.dll\ActiveDirectory:://RootDSE/{0}' -f $DN) -AclObject $Acl -ErrorVariable Stop
 
                 $processedObjects.Add([PSCustomObject]@{
                         Name              = $item.Name
